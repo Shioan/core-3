@@ -1,63 +1,78 @@
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-
+        //Создаем StringBuilder для записи кэша
         StringBuilder txt = new StringBuilder();
-
+        //Создаем каталоги
         File gameDir = new File("C://Games");
-        if (gameDir.mkdir()) txt.append("Создан каталог " + gameDir.getName()); else txt.append("Ошибка создания " + gameDir.getName());
+        catalogAdd(txt, gameDir);
         File src = new File(gameDir, "src");
-        if (src.mkdir()) txt.append("\nСоздан каталог " + src.getName()); else txt.append("Ошибка создания " + src.getName());
+        catalogAdd(txt, src);
         File res = new File(gameDir, "res");
-        if (res.mkdir()) txt.append("\nСоздан каталог " + res.getName()); else txt.append("Ошибка создания " + res.getName());
+        catalogAdd(txt, res);
         File savegames = new File(gameDir, "savegames");
-        if (savegames.mkdir()) txt.append("\nСоздан каталог " + savegames.getName()); else txt.append("Ошибка создания " + savegames.getName());
+        catalogAdd(txt, savegames);
         File temp = new File(gameDir, "temp");
-        if (temp.mkdir()) txt.append("\nСоздан каталог " + temp.getName()); else txt.append("Ошибка создания " + temp.getName());
-
+        catalogAdd(txt, temp);
+        //Создаем подкаталоги в каталоге src
         File mainDir = new File(src, "main");
-        if (mainDir.mkdir()) txt.append("\nСоздан каталог " + mainDir.getName()); else txt.append("Ошибка создания " + mainDir.getName());
+        catalogAdd(txt, mainDir);
         File testDir = new File(src, "test");
-        if (testDir.mkdir()) txt.append("\nСоздан каталог " + testDir.getName()); else txt.append("Ошибка создания " + testDir.getName());
+        catalogAdd(txt, testDir);
+        //Создаем файлы в подкаталогах src
         File main = new File(mainDir, "Main. java");
-        try {
-            if (main.createNewFile()) txt.append("\nСоздан файл " + main.getName()); else txt.append("Ошибка создания " + main.getName());
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        fileAdd(txt, main);
         File utils = new File(testDir, "Utils.java");
-        try {
-            if (utils.createNewFile()) txt.append("\nСоздан файл " + utils.getName()); else txt.append("Ошибка создания " + utils.getName());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+        fileAdd(txt, utils);
+        //Создаем подкаталоги в каталоге res
         File drawableDir = new File(res, "drawable");
-        if (drawableDir.mkdir()) txt.append("\nСоздан каталог " + drawableDir.getName()); else txt.append("Ошибка создания " + drawableDir.getName());
+        catalogAdd(txt, drawableDir);
         File vectorsDir = new File(res, "vectors");
-        if (vectorsDir.mkdir()) txt.append("\nСоздан каталог " + vectorsDir.getName()); else txt.append("Ошибка создания " + vectorsDir.getName());
+        catalogAdd(txt, vectorsDir);
         File iconsDir = new File(res, "icons");
-        if (iconsDir.mkdir()) txt.append("\nСоздан каталог " + iconsDir.getName()); else txt.append("Ошибка создания " + iconsDir.getName());
-
+        catalogAdd(txt, iconsDir);
+        //В каталоге temp создаем файл
         File tempTxt = new File(temp, "temp.txt");
+        fileAdd(txt, tempTxt);
+        //Записываем в файл всю записанную в StringBuilder историю изменений
+        writeToFile(tempTxt, txt);
+
+    }
+
+    public static StringBuilder catalogAdd(StringBuilder txt, File name) {
+        if (name.mkdir()) {
+            txt.append("\nСоздан каталог " + name.getName());
+        } else {
+            txt.append("\nОшибка создания каталога " + name.getName());
+        }
+        return txt;
+    }
+
+    public static StringBuilder fileAdd(StringBuilder txt, File name) {
         try {
-            if (tempTxt.createNewFile()) txt.append("\nСоздан файл " + tempTxt.getName()); else txt.append("Ошибка создания " + tempTxt.getName());
+            if (name.createNewFile()) {
+                txt.append("\nСоздан файл " + name.getName());
+            } else {
+                txt.append("\nОшибка создания файла " + name.getName());
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return txt;
+    }
 
-        try (FileWriter writer = new FileWriter(tempTxt)) {
-            writer.write(String.valueOf(txt));
+    public static File writeToFile(File file, StringBuilder builder) {
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write(String.valueOf(builder));
             writer.append('\n');
             writer.flush();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
-
+        return file;
     }
 }
+
